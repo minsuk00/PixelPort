@@ -1,0 +1,5 @@
+torch==2.10.0
+monai==1.5.2
+nibabel==5.3.3
+numpy==1.26.4
+matplotlib==3.10.8   # only needed for --preview
