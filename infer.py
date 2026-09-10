@@ -36,14 +36,15 @@ def load_nifti(path):
     return Compose(t)({"x": str(path)})["x"]
 
 
-def predict(model, mri, device):
+@torch.inference_mode()
+def predict(model, mri, device, patch_size=PATCH_SIZE):
     """Sliding-window inference on a (1, W, H, D) MRI tensor. Returns an (W, H, D) HU array."""
     shape = mri.shape[1:]
     mri = ScaleIntensityd(keys="x", minv=0.0, maxv=1.0)({"x": mri})["x"]
     mri = DivisiblePadd(keys="x", k=PAD_MULT, method="end")({"x": mri})["x"]
     mri = torch.as_tensor(np.asarray(mri)).unsqueeze(0).to(device)
     with torch.autocast("cuda", dtype=torch.float16, enabled=device.type == "cuda"):
-        pred = sliding_window_inference(mri, roi_size=(PATCH_SIZE,) * 3, sw_batch_size=1, predictor=model, overlap=SW_OVERLAP)
+        pred = sliding_window_inference(mri, roi_size=(patch_size,) * 3, sw_batch_size=1, predictor=model, overlap=SW_OVERLAP)
     pred = pred.float().clamp(0.0, 1.0) * (CT_HI - CT_LO) + CT_LO
     return pred[0, 0, : shape[0], : shape[1], : shape[2]].cpu().numpy()
 
@@ -72,12 +73,12 @@ def parse_args():
     p.add_argument("--mri", required=True, help="Input MRI NIfTI (.nii or .nii.gz).")
     p.add_argument("--mask", default=None, help="Optional body mask NIfTI; MRI is zeroed outside it and the sCT set to -1024 HU there.")
     p.add_argument("--checkpoint", default=str(DEFAULT_CHECKPOINT), help="Trained checkpoint (.pt).")
+    p.add_argument("--patch_size", type=int, default=PATCH_SIZE, help="Sliding-window size; lower it (e.g. 128) for GPUs with less memory.")
     p.add_argument("--save_dir", default=None, help="Output directory (default: same dir as --mri).")
     p.add_argument("--preview", action="store_true", help="Also save a mid-slice preview PNG.")
     return p.parse_args()
 
 
-@torch.inference_mode()
 def main():
     args = parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -91,7 +92,7 @@ def main():
         mri[0][~mask] = 0  # model was trained on body-masked MRI (masked BEFORE min-max normalization)
 
     model = load_model(args.checkpoint, device)
-    ct = predict(model, mri, device)
+    ct = predict(model, mri, device, args.patch_size)
     if mask is not None:
         ct[~mask] = CT_LO
 
