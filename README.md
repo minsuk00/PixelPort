@@ -31,7 +31,7 @@ Any orientation is fine (reoriented to RAS internally).
 |------|-------------|---------|
 | `--mri` | input MRI (`.nii` or `.nii.gz`) | **required** |
 | `--mask` | body mask NIfTI; applied to the input MRI and the output CT | off |
-| `--checkpoint` | trained checkpoint `.pt` | `weights/unet_translator.pt` |
+| `--checkpoint` | trained checkpoint `.pt` | `weights/pixelport.pt` |
 | `--patch_size` | sliding-window size | 256 |
 | `--save_dir` | output directory | the MRI's directory |
 | `--preview` | also save a PNG of the 3 orthogonal mid-slice views | off |

@@ -15,7 +15,7 @@ from monai.transforms import Compose, DivisiblePadd, EnsureChannelFirstd, LoadIm
 
 from network import Unet
 
-DEFAULT_CHECKPOINT = Path(__file__).resolve().parent / "weights" / "unet_translator.pt"
+DEFAULT_CHECKPOINT = Path(__file__).resolve().parent / "weights" / "pixelport.pt"
 NGF = 32
 NUM_DOWNS = 4
 PAD_MULT = 16  # 2**NUM_DOWNS
