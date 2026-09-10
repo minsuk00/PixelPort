@@ -1,6 +1,8 @@
-# MRI → CT inference
+# PixelPort
 
-Synthesize a CT (NIfTI, Hounsfield units) from an MRI.
+Whole-body MR-to-CT synthesis with a single 3D U-Net.
+
+![Whole-body MR-to-CT synthesis](assets/whole_body_mrct.png)
 
 ## Install
 
