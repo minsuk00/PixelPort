@@ -99,13 +99,13 @@ def main():
     save_dir = Path(args.save_dir) if args.save_dir is not None else Path(args.mri).resolve().parent
     save_dir.mkdir(parents=True, exist_ok=True)
     stem = Path(args.mri).name.removesuffix(".nii.gz").removesuffix(".nii")
-    out_path = save_dir / f"{stem}_synth_ct.nii.gz"
+    out_path = save_dir / f"{stem}_sct.nii.gz"
     nib.save(nib.Nifti1Image(ct, np.asarray(mri.affine)), str(out_path))
     print(f"[infer] saved {out_path}  (HU range {ct.min():.0f}..{ct.max():.0f})")
 
     if args.preview:
-        save_preview(ct, str(save_dir / f"{stem}_synth_ct_preview.png"))
-        print(f"[infer] saved {stem}_synth_ct_preview.png")
+        save_preview(ct, str(save_dir / f"{stem}_sct_preview.png"))
+        print(f"[infer] saved {stem}_sct_preview.png")
 
 
 if __name__ == "__main__":

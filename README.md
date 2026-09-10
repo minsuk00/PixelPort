@@ -17,7 +17,7 @@ python infer.py --mri mri.nii.gz
 python infer.py --mri mri.nii.gz --mask mask.nii.gz --save_dir out/ --preview
 ```
 
-Writes `<mri_name>_synth_ct.nii.gz` with the input MRI's affine.
+Writes `<mri_name>_sct.nii.gz` with the input MRI's affine.
 
 The model was trained on 1.5 mm isotropic MRIs; resample to that spacing for best results.
 
